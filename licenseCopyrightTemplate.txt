@@ -1,0 +1,99 @@
+/*
+ * CDDL HEADER START
+ *
+ * The contents of this file are subject to the terms of the
+ * Common Development and Distribution License (the "License").
+ * You may not use this file except in compliance with the License.
+ *
+ * You can obtain a copy of the license at ./CDDL.LICENSE
+ * See the License for the specific language governing permissions
+ * and limitations under the License.
+ *
+ * When distributing Covered Code, include this CDDL HEADER in each
+ * file and include the License file at ./CDDL.LICENSE.
+ * If applicable, add the following below this CDDL HEADER, with the
+ * fields enclosed by brackets "[]" replaced with your own identifying
+ * information: Portions Copyright [yyyy] [name of copyright owner]
+ *
+ * CDDL HEADER END
+ */
+/*
+ * Copyright (c) 2024, Nicholas Martin. All rights reserved.
+ */
+
+//+------------------------------------------------------------------+
+//|                                                      system1.mq4 |
+//|                                  Copyright 2024, Nicholas Martin |
+//|                                                                  |
+//+------------------------------------------------------------------+
+#property copyright "Copyright 2024, Nicholas Martin"
+#property link      ""
+#property version   "7.30"
+#property strict
+
+#include <tradeLib.mqh>
+#include <algorithms.mqh>
+#include <ticketObject.mph>
+
+const int MAGIC_NUMBER = 333;
+const int MAX_CONSEC_LOSSES = 3;        //maximum amount of losses allowed by the system before robot shuts down
+const double MAX_PERCENT_LOSS = 3.0;    //maximum allowed percent loss of the original balance before robot shuts down
+const double BALANCE_THRESHOLD = AccountBalance() * (1 * (MAX_PERCENT_LOSS / 100));   //lowest allowed account balance before robot shuts off
+
+const PositionDirection posDir;
+Phase phase;
+
+bool longEntryCriteriaMet() {
+    posDir = Long;
+    return ;
+}
+
+bool shortEntryCriteriaMet() {
+    posDir = Short;
+    return ;
+}
+
+void setEntryAlgorithm(const Algorithm algo) {
+    global algo = algo;
+}
+
+bool longExitCriteriaMet() {
+    return ;
+}
+
+bool shortExitCriteriaMet() {
+    return ;
+}
+
+
+
+int OnInit() {
+    Print("> Initializing ", WindowExpertName(), " on symbol ", _Symbol, " and period ", _Period, ".");
+    phase = PreCheck;
+    return INIT_SUCCEEDED;
+}
+
+void OnDeinit(const int reason) {
+    Print("> Deinitializing ", WindowExpertName(), " on symbol", _Symbol, " and period ", _Period, " due to ", reason);
+}
+
+void OnTick() {
+    switch (phase) {
+        case PreCheck: {
+            const bool belowBalanceThreshold = AccountBalance() < BALANCE_THRESHOLD;
+            const bool exceededConsecutiveLosses = findConsecutiveLosses(_Symbol, MAGIC_NUMBER) > MAX_CONSEC_LOSSES;
+            
+            if (belowBalanceThreshold || exceededConsecutiveLosses) {
+                Print("> ", WindowExpertName(), " blocked for the following reasons:");
+                if (belowBalanceThreshold) Print("   - most recent balance is below ", BALANCE_THRESHOLD, ".");
+                if (exceededConsecutiveLosses) Print("   - the consecutive losses have reached the limit of, " MAX_CONSEC_LOSSES, ".");
+                Print("> ", WindowExpertName(), " will now shut down.");
+                ExpertRemove();
+            }
+
+        case Scan: {
+            if (longCriteriaMet()) {    //fill 
+
+
+
+
