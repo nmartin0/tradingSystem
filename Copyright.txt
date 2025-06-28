@@ -1,0 +1,13 @@
+/*****************************************************************************\
+*							                      *
+*           Copyright 2025 by Nicholas Martin. All rights reserved.           *
+*							                      *
+*    THIS IS NOT FREE SOFTWARE. Its usage is subject to Copyright (c) law.    *
+*									      *
+*  This file and its intermediate and final form(s) may not be used, copied,  *
+*  and/or redistributed without explicit permission. Terms regarding its      *
+*  usage are subject to change without notice. This software may include      *
+*  components from outside sources which are used within the terms of their   *
+*  respective license(s).						      *
+*									      *
+\*****************************************************************************/
